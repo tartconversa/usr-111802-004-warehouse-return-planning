@@ -1,0 +1,9 @@
+{
+  "name": "仓库补货运营",
+  "event_kinds": [
+    "sale",
+    "return",
+    "inspection",
+    "inventory"
+  ]
+}
