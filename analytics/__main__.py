@@ -1,8 +1,9 @@
-"""本地演练入口：导入一份样本并查看现有业务摘要。"""
+"""本地演练入口：导入一份样本并查看现有业务摘要与补货建议。"""
 import argparse
 import json
 from pathlib import Path
 from .service import AnalyticsService
+
 
 def main():
     parser = argparse.ArgumentParser(description="运营分析服务")
@@ -16,11 +17,16 @@ def main():
             service.register(**subject)
         for alias in sample["aliases"]:
             service.link(**alias)
+        for stock in sample.get("stock", []):
+            service.domain.set_available(**stock)
         for event in sample["events"]:
             service.ingest(event)
-        print(json.dumps(service.summary(), ensure_ascii=False, sort_keys=True))
+        print(json.dumps(
+            {"summary": service.summary(), "replenishment": service.replenishment()},
+            ensure_ascii=False, sort_keys=True, indent=2))
     finally:
         service.close()
+
 
 if __name__ == "__main__":
     main()

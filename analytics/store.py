@@ -45,8 +45,9 @@ class EventStore:
         deleted = event.get("deleted", False)
         if type(deleted) is not bool:
             raise ValueError("删除标记无效")
+        deleted = int(deleted)
         payload = json.dumps(event["payload"], ensure_ascii=False, sort_keys=True, allow_nan=False)
-        values = (source, event_id, rev, event["kind"], entity, occurred, observed, payload, int(deleted))
+        values = (source, event_id, rev, event["kind"], entity, occurred, observed, payload, deleted)
         prior = self.connection.execute(
             "SELECT kind,entity,occurred_at,observed_at,payload,deleted FROM events WHERE source=? AND event_id=? AND revision=?",
             (source, event_id, rev)).fetchone()
@@ -56,6 +57,17 @@ class EventStore:
             raise ValueError("同来源同事件同修订内容冲突")
         self.connection.execute("INSERT INTO events VALUES (?,?,?,?,?,?,?,?,?)", values)
         return True
+
+    def find(self, source, event_id, revision=None):
+        sql = ("SELECT source,event_id,revision,kind,entity,occurred_at,observed_at,payload,deleted "
+               "FROM events WHERE source=? AND event_id=?")
+        parameters = [source, event_id]
+        if revision is not None:
+            sql += " AND revision=?"
+            parameters.append(revision)
+        sql += " ORDER BY revision DESC LIMIT 1"
+        row = self.connection.execute(sql, parameters).fetchone()
+        return dict(row) | {"payload": json.loads(row["payload"])} if row else None
 
     def current(self, as_of=None):
         where = "" if as_of is None else "WHERE observed_at<=?"

@@ -8,22 +8,68 @@
   ],
   "aliases": [
     {
-      "source": "system",
-      "external_id": "external-1",
+      "source": "wms",
+      "external_id": "wms-1",
       "entity_id": "entity-1"
+    },
+    {
+      "source": "qc",
+      "external_id": "qc-1",
+      "entity_id": "entity-1"
+    }
+  ],
+  "stock": [
+    {
+      "warehouse": "wh-1",
+      "sku": "sku-1",
+      "quantity": 3
     }
   ],
   "events": [
     {
-      "source": "system",
-      "event_id": "sample-1",
+      "source": "wms",
+      "event_id": "sale-1",
       "revision": 1,
       "kind": "sale",
-      "entity": "external-1",
+      "entity": "wms-1",
       "occurred_at": "2026-11-01T10:00:00+08:00",
       "observed_at": "2026-11-01T11:00:00+08:00",
       "payload": {
-        "amount": 3
+        "warehouse": "wh-1",
+        "sku": "sku-1",
+        "quantity": 10
+      }
+    },
+    {
+      "source": "wms",
+      "event_id": "return-1",
+      "revision": 2,
+      "kind": "return",
+      "entity": "wms-1",
+      "occurred_at": "2026-11-02T09:00:00+08:00",
+      "observed_at": "2026-11-03T09:00:00+08:00",
+      "payload": {
+        "return_id": "r-100",
+        "warehouse": "wh-1",
+        "sku": "sku-1",
+        "quantity": 4,
+        "status": "in_transit"
+      }
+    },
+    {
+      "source": "qc",
+      "event_id": "inspection-1",
+      "revision": 1,
+      "kind": "inspection",
+      "entity": "qc-1",
+      "occurred_at": "2026-11-04T14:00:00+08:00",
+      "observed_at": "2026-11-04T15:00:00+08:00",
+      "payload": {
+        "return_ref": "r-100",
+        "warehouse": "wh-1",
+        "sku": "sku-1",
+        "quantity": 3,
+        "conclusion": "resellable"
       }
     }
   ]

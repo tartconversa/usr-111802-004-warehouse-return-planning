@@ -5,5 +5,13 @@
     "return",
     "inspection",
     "inventory"
+  ],
+  "return_statuses": [
+    "requested",
+    "in_transit"
+  ],
+  "inspection_conclusions": [
+    "resellable",
+    "unresellable"
   ]
 }
